@@ -18,6 +18,7 @@ from Modelos.Excepciones.SaldoInsuficienteException import SaldoInsuficienteExce
 from Modelos.Excepciones.OperacionImposibleException import OperacionImposibleException
 from Modelos.Log.Log import Log
 from Servicios.BonusAdmin import BonusAdmin
+from datetime import datetime, timedelta
 
 class Banco:
     def __init__(self, name: str, clients: list[Cliente], employees: list[Empleado], global_transactions: list[Transaction], logs: list[Log], bonus_admin: BonusAdmin):
@@ -469,13 +470,36 @@ class Banco:
         return credit_interest
         
 
-    def pay_credit_installment(self):
-        #Permite pagar una cuota de un crédito activo.
-        pass
-
+    def pay_credit_installment(self, client: "Cliente", credit: "Credito", amount: float):
+        # Permite pagar una cuota de un crédito activo.
+        if credit not in client.credits:
+            raise ValueError("El crédito no pertenece a este cliente.")
+ 
+        if credit.status != "Aprobado":
+            raise OperacionImposibleException("El crédito no está activo.")
+ 
+        if amount <= 0:
+            raise ValueError("El monto de la cuota debe ser mayor a 0.")
+ 
+        if amount > credit.remaining_balance:
+            amount = credit.remaining_balance
+ 
+        credit.remaining_balance -= amount
+ 
+        if credit.remaining_balance <= 0:
+            credit.remaining_balance = 0
+            credit.status = "Pagado"
+ 
+        return credit.remaining_balance.
+        
     def list_active_credits(self):
-        #Retorna todos los créditos actualmente activos.
-        pass
+        # Retorna todos los créditos actualmente activos (aprobados y no pagados).
+        active_credits = []
+        for client in self.clients:
+            for credit in client.credits:
+                if credit.status == "Aprobado":
+                    active_credits.append(credit)
+        return active_credits
 
     def create_card(self, client: Cliente, account: CuentaBancaria):
         #Genera una tarjeta asociada a una cuenta bancaria.
@@ -561,8 +585,13 @@ class Banco:
             self.message = "Se han detectado transacciones grandes."
             self.send_notification("client", "Se han detectado transacciones grandes.")
 
-    def temporary_account_lock(self):
-        pass 
+    def temporary_account_lock(self, employee: "Empleado", minutes: int):
+        # Bloquea temporalmente a un empleado por una cantidad de minutos.
+        if minutes <= 0:
+            raise ValueError("Los minutos deben ser mayor a 0.")
+        self.block_employee(employee)
+        employee.locked_until = datetime.now() + timedelta(minutes=minutes)
+        return employee.locked_until 
 
     def suspicious_login_detection(self):
         if self.employee_login_history() > 3:
@@ -576,41 +605,97 @@ class Banco:
         elif self.password != self.password:
             return True
 
-    def validate_transfer_limit(self):
-        pass
     
-    def get_top_clients(self):
-        pass 
+    def validate_transfer_limit(self, amount: float, limit: float):
+        # Verifica si el monto de transferencia supera el límite permitido.
+        if amount <= 0:
+            raise ValueError("El monto debe ser mayor a 0.")
+        return amount <= limit
+    
+    def get_top_clients(self, n: int):
+        # Retorna los n clientes con mayor saldo total entre todas sus cuentas.
+        if n <= 0:
+            raise ValueError("n debe ser mayor a 0.")
+        client_balances = []
+        for client in self.clients:
+            total = sum(
+                account.get_balance()
+                for account in self.accounts
+                if account.client == client
+            )
+            client_balances.append((client, total))
+        client_balances.sort(key=lambda x: x[1], reverse=True)
+        return [client for client, _ in client_balances[:n]]
         
     def get_total_bank_money(self):
         total_money = 0
-
         for account in self.accounts:
             total_money += account.get_balance()
-
         return total_money
         
     def get_total_transactions(self):
         return len(self.global_transactions)
 
     def get_most_used_account_type(self):
-        pass
+        # Retorna el tipo de cuenta más usado entre todas las cuentas registradas.
+        if not self.accounts:
+            return None
+        type_count = {}
+        for account in self.accounts:
+            account_type = type(account).__name__
+            type_count[account_type] = type_count.get(account_type, 0) + 1
+        return max(type_count, key=type_count.get)
 
-    def get_employee_performance(self):
-        pass
+    def get_employee_performance(self, employee: "Empleado"):
+        # Calcula el rendimiento de un empleado según sus acciones en logs.
+        actions = [log for log in self.logs if log.employee == employee]
+        successful = [log for log in actions if log.result == "success"]
+        return {
+            "employee": employee.name,
+            "total_actions": len(actions),
+            "successful_actions": len(successful),
+            "performance_rate": round(len(successful) / len(actions), 2) if actions else 0.0
+        }
 
-    def close_account(self):
-        pass
+    def close_account(self, employee: "Empleado", account: "CuentaBancaria"):
+        # Cierra una cuenta bancaria si su saldo es cero.
+        self.validate_permission(employee, "delete_account", account)
+        if account.get_balance() != 0:
+            raise OperacionImposibleException(
+                "No se puede cerrar una cuenta con saldo pendiente."
+            )
+        account.account_active = False
+        self.accounts.remove(account)
+        self.register_log("close_account", employee, "success")
+        return True
+
+    def apply_monthly_fee(self, employee: "Empleado", account: "CuentaBancaria", fee: float):
+        # Descuenta una comisión mensual al saldo de la cuenta.
+        self.validate_permission(employee, "delete_account", account)
+        if not account.account_active:
+            raise OperacionImposibleException("La cuenta no está activa.")
+        if fee <= 0:
+            raise ValueError("La comisión debe ser mayor a 0.")
+        account.withdraw(fee)
+        self.register_log("apply_monthly_fee", employee, "success")
+        return account.get_balance()
+
+    def currency_conversion(self, amount: float, from_currency: str, to_currency: str, rates: dict):
+        # Convierte un monto entre monedas usando un diccionario de tasas respecto al USD.
+        if from_currency not in rates or to_currency not in rates:
+            raise ValueError(f"Moneda no soportada. Disponibles: {list(rates.keys())}")
+        if amount <= 0:
+            raise ValueError("El monto debe ser mayor a 0.")
+        amount_in_base = amount / rates[from_currency]
+        converted = amount_in_base * rates[to_currency]
+        return round(converted, 2)
     
-
-    def apply_monthly_fee(self):
-        pass
-
-    def currency_conversion(self):
-        pass
-    
-    def promotion_history(self):
-        pass
+    def promotion_history(self, employee: "Empleado"):
+        # Retorna el historial de promociones de un empleado desde los logs.
+        return [
+            log for log in self.logs
+            if log.employee == employee and log.action == "promotion"
+        ]
 
     def reject_promotion(self):
         if self.approve_promotion == False:
@@ -619,11 +704,39 @@ class Banco:
         else:
             raise OperacionImposibleException("No se puede rechazar la promoción.")
     
-    def evaluate_promotion(self):
-        pass
+    def evaluate_promotion(self, director: "Director", employee: "Empleado"):
+        # Evalúa si un empleado cumple los requisitos para ser promovido.
+        if not director.can_create_user():
+            raise OperacionImposibleException("Permiso denegado.")
+        if not employee.can_request_promotion():
+            return {
+                "eligible": False,
+                "reason": "El empleado no cumple los requisitos mínimos para solicitar promoción."
+            }
+        performance = self.get_employee_performance(employee)
+        if performance["performance_rate"] < 0.7:
+            return {
+                "eligible": False,
+                "reason": f"Rendimiento insuficiente: {performance['performance_rate']*100}%."
+            }
+        return {
+            "eligible": True,
+            "reason": "El empleado cumple todos los requisitos para ser promovido."
+        }
     
     def generate_employee_report(self):
-        pass 
+        # Genera un reporte con la información de todos los empleados.
+        report = []
+        for employee in self.employees:
+            report.append({
+                "name": employee.name,
+                "dni": employee.get_dni(),
+                "role": employee.get_position(),
+                "salary": employee.get_salary(),
+                "experience": employee.experience,
+                "is_blocked": employee.is_blocked
+            })
+        return report
 
     def generate_security_report(self):
         print("Generando reporte de seguridad...")
@@ -680,26 +793,99 @@ class Banco:
         print("Reporte de créditos generado exitosamente.")
         pass # historial de vida financiera del cliente, tarjetas, créditos, inversiones, deuda, etc.
     
-    def filter_transactions_by_type(self):
-        pass
+    def filter_transactions_by_type(self, transaction_type: str):
+        # Me filtra las transacciones globales por tipo ("Retiro", "Depósito", "Transferencia").
+        valid_types = ["Retiro", "Depósito", "Transferencia"]
+        if transaction_type not in valid_types:
+            raise ValueError(f"Tipo inválido. Los tipos válidos son: {valid_types}")
+        return [
+            t for t in self.global_transactions
+            if t.type == transaction_type
+        ]
     
-    def filter_transactions_by_amount(self):
-        pass
+    def filter_transactions_by_amount(self, min_amount: float, max_amount: float):
+        # Filtra las transacciones globales dentro de un rango de monto.
+        if min_amount < 0 or max_amount < 0:
+            raise ValueError("Los montos no pueden ser negativos.")
+        if min_amount > max_amount:
+            raise ValueError("El monto mínimo no puede ser mayor al máximo.")
+        return [
+            t for t in self.global_transactions
+            if min_amount <= t.amount <= max_amount
+        ]
 
-    def classify_client(self):
-        pass
-
-    def blacklist_client(self):
-        pass
+    def classify_client(self, client: "Cliente"):
+        # Clasifica al cliente según su saldo total: Básico, Preferencial o VIP.
+        total_balance = sum(
+            account.get_balance()
+            for account in self.accounts
+            if account.client == client
+        )
+        if total_balance >= 100_000:
+            return "VIP"
+        elif total_balance >= 10_000:
+            return "Preferencial"
+        else:
+            return "Básico"
+            
+    def blacklist_client(self, employee: "Empleado", client: "Cliente", reason: str):
+        # Agrega al cliente a una lista negra interna del banco y registra el motivo.
+        self.validate_permission(employee, "delete_account", client)
+        if not hasattr(client, "is_blacklisted"):
+            client.is_blacklisted = False
+        client.is_blacklisted = True
+        client.blacklist_reason = reason
+        self.register_log(
+            "blacklist_client",
+            employee,
+            f"Cliente {client.name} (DNI: {client.dni}) bloqueado. Motivo: {reason}"
+        )
+        return True
     
-    def calculate_client_score(self):
-        pass
+    def calculate_client_score(self, client: "Cliente"):
+        # Calcula un puntaje crediticio del cliente basado en saldo, créditos y edad.
+        score = 0
+        # Hasta 300 puntos por saldo total
+        total_balance = sum(
+            account.get_balance()
+            for account in self.accounts
+            if account.client == client
+        )
+        score += min(total_balance / 1000, 300)
+        # 50 punto por cada crédito pagado
+        paid_credits = [c for c in client.credits if c.status == "Pagado"]
+        score += len(paid_credits) * 50
+        # -30 puntos por cada crédito rechazado
+        rejected_credits = [c for c in client.credits if c.status == "Rechazado"]
+        score -= len(rejected_credits) * 30
+        # +100 puntos si tiene 25 o más años
+        if client.age >= 25:
+            score += 100
+        return max(0, round(score))
+        
+     def employee_activity_history(self, employee: "Empleado"):
+        # Retorna todas las acciones registradas en logs para un empleado.
+        return [log for log in self.logs if log.employee == employee]
 
-    def employee_activity_history(self):
-        pass
+     def employee_login_history(self, employee: "Empleado"):
+        # Retorna el historial de inicios de sesión de un empleado desde los logs.
+        return [
+            log for log in self.logs
+            if log.employee == employee and log.action == "login"
+        ]
 
-    def employee_login_history(self):
-        pass
-
-    def evaluate_employee(self):
-        pass
+     def evaluate_employee(self, director: "Director", employee: "Empleado"):
+        # Evalúa a un empleado con base en su rendimiento, experiencia y estado.
+        if not director.can_see_reports():
+            raise OperacionImposibleException("Permiso denegado.")
+        performance = self.get_employee_performance(employee)
+        login_history = self.employee_login_history(employee)
+        return {
+            "name": employee.name,
+            "experience": employee.experience,
+            "is_blocked": employee.is_blocked,
+            "total_logins": len(login_history),
+            "total_actions": performance["total_actions"],
+            "successful_actions": performance["successful_actions"],
+            "performance_rate": performance["performance_rate"]
+        }
