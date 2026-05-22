@@ -821,9 +821,9 @@ class Banco:
             for account in self.accounts
             if account.client == client
         )
-        if total_balance >= 100_000:
+        if total_balance >= 100000:
             return "VIP"
-        elif total_balance >= 10_000:
+        elif total_balance >= 10000:
             return "Preferencial"
         else:
             return "Básico"
