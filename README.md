@@ -375,19 +375,19 @@ class SaldoInsuficienteException(Exception):
 <p>Este paquete contiene a la clase Log, la cual simplifica el registro de veces accedidas por el usuario al sistema.</p>
 
 ´´´python
-    import uuid
-    from Modelos.Roles.Empleado import Empleado
-    from datetime import datetime
+import uuid
+from Modelos.Roles.Empleado import Empleado
+from datetime import datetime
 
-    class Log:
-        def __init__(self, empleado: Empleado, accion: str, estado: str, detalle: str = ""):
-            self.id = uuid.uuid4().hex[:8]
-            self.fecha = datetime.now()
+class Log:
+    def __init__(self, empleado: Empleado, accion: str, estado: str, detalle: str = ""):
+        self.id = uuid.uuid4().hex[:8]
+        self.fecha = datetime.now()
 
-            self.empleado = empleado
-            self.accion = accion
-            self.estado = estado   
-            self.detalle = detalle
+        self.empleado = empleado
+        self.accion = accion
+        self.estado = estado   
+        self.detalle = detalle
 ´´´
 
 ## Roles
@@ -398,210 +398,210 @@ class SaldoInsuficienteException(Exception):
 <p>Éste es la clase base que contiene atributos propios de una persona contratada por una entidad, al igual que funcionalidades como solicitar aumento de salario, bonus, despedir o contratar empleados, etc. Algunos de los métodos son sobreescritos en clases posteriores, ya que según el rango al que se pertenezca, se limitan las capacidades.</p>
 
 ´´´python
-    class Empleado:
-        total_employees: int = 0
-        
-        def __init__(self, name: str, dni: int, position: str, salary: float, experience: int) -> None:
-            Empleado.total_employees +=1
-            self.name = name
-            self.__position = position
-            self.__dni = dni
-            self.__salary = salary
-            self.experience = experience
-            self.is_blocked = False
-            self.failed_attempts = 0
+class Empleado:
+    total_employees: int = 0
+    
+    def __init__(self, name: str, dni: int, position: str, salary: float, experience: int) -> None:
+        Empleado.total_employees +=1
+        self.name = name
+        self.__position = position
+        self.__dni = dni
+        self.__salary = salary
+        self.experience = experience
+        self.is_blocked = False
+        self.failed_attempts = 0
 
-        def get_position(self):
-            return (self.__position)
-        
-        def set_position(self, new_position):
-            self.__position = new_position
+    def get_position(self):
+        return (self.__position)
+    
+    def set_position(self, new_position):
+        self.__position = new_position
 
-        def get_dni(self):
-            return (self.__dni)
-        
-        def get_salary(self):
-            return (self.__salary)
-        
-        def set_salary(self, new_salary):
-            self.__salary = new_salary
-        
-        def obtain_bonus(self) -> float:
-            raise NotImplementedError("El método debe ser implementado en la sublclase.")
+    def get_dni(self):
+        return (self.__dni)
+    
+    def get_salary(self):
+        return (self.__salary)
+    
+    def set_salary(self, new_salary):
+        self.__salary = new_salary
+    
+    def obtain_bonus(self) -> float:
+        raise NotImplementedError("El método debe ser implementado en la sublclase.")
 
-        def raise_salary(self):
-            self.set_salary(
-                self.get_salary() * (1 + self.percentage_increase())
-            )
-        
-        def can_approve_credit(self, amount: float)-> bool:
-            return False
-        
-        def can_modify_salary(self, employee: "Empleado", amount: float)-> bool:
-            return False
-        
-        def can_see_reports(self) ->bool:
-            return False
-        
-        def can_see_information(self) -> bool:
-            return False
-        
-        def can_approve_transfer(self, amount: float) -> bool:
-            return False
-        
-        def can_create_user(self) -> bool:
-            return False
-        
-        def can_delete_user(self) ->bool:
-            return False
-        
-        def can_raise_salary(self, employee: "Empleado") -> bool:
-            return False
-        
-        def percentage_increase(self) -> float:
-            return 0.01
-        
-        def can_request_promotion(self):
-            return self.experience >= 5
+    def raise_salary(self):
+        self.set_salary(
+            self.get_salary() * (1 + self.percentage_increase())
+        )
+    
+    def can_approve_credit(self, amount: float)-> bool:
+        return False
+    
+    def can_modify_salary(self, employee: "Empleado", amount: float)-> bool:
+        return False
+    
+    def can_see_reports(self) ->bool:
+        return False
+    
+    def can_see_information(self) -> bool:
+        return False
+    
+    def can_approve_transfer(self, amount: float) -> bool:
+        return False
+    
+    def can_create_user(self) -> bool:
+        return False
+    
+    def can_delete_user(self) ->bool:
+        return False
+    
+    def can_raise_salary(self, employee: "Empleado") -> bool:
+        return False
+    
+    def percentage_increase(self) -> float:
+        return 0.01
+    
+    def can_request_promotion(self):
+        return self.experience >= 5
 ´´´
 
 ### Empleado Autenticable
 <p> Hereda de empleado. Su diferencia radica en que EmpleadoAutenticable cuenta con contraseña y sistema de verificación de la misma.</p>
 
 ´´´python
-    from Modelos.Roles.Empleado import Empleado
-    from Modelos.AutenticableHelper.AutenticableHelper import AutenticableHelper
+from Modelos.Roles.Empleado import Empleado
+from Modelos.AutenticableHelper.AutenticableHelper import AutenticableHelper
 
-    class EmpleadoAutenticable(Empleado):
-        def __init__(self, name: str, dni: int, position: str, salary: float, experience: int, password: str):
-            super().__init__(name, dni, position, salary, experience)
-            self._helper = AutenticableHelper()
-            self.password = password
+class EmpleadoAutenticable(Empleado):
+    def __init__(self, name: str, dni: int, position: str, salary: float, experience: int, password: str):
+        super().__init__(name, dni, position, salary, experience)
+        self._helper = AutenticableHelper()
+        self.password = password
 
-        def authenticate_user(self, new_password: str):
-            return self._helper.comparate_passwords(self.password, new_password)
+    def authenticate_user(self, new_password: str):
+        return self._helper.comparate_passwords(self.password, new_password)
 
-        def obtain_bonus(self) -> float:
-            return 0
+    def obtain_bonus(self) -> float:
+        return 0
 ´´´
 
 ### Administrativo
 <p>Cualquier empleado que sea ejecutivo o jefe gozará de estas funcionalidades. Puede ver reportes, ver información, crear y eliminar usuarios. Como novedad, tiene un aumento de salario distinto al de un empleado base.</p>
 
 ´´´python
-    from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
-    class Administrativo(EmpleadoAutenticable):
-        def __init__(self, name: str, dni: int, experience: int, password: str):
-            super().__init__(name, dni, "Administrativo", 20000, experience, password)
+from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
+class Administrativo(EmpleadoAutenticable):
+    def __init__(self, name: str, dni: int, experience: int, password: str):
+        super().__init__(name, dni, "Administrativo", 20000, experience, password)
 
-        def obtain_bonus(self):
-            return self.get_salary() * 0.15
-        
-        def can_see_reports(self) ->bool:
-            return True
-        
-        def can_see_information(self) -> bool:
-            return True
-        
-        def can_create_user(self) -> bool:
-            return True
-        
-        def can_delete_user(self) ->bool:
-            return True
-        
-        def percentage_increase(self) -> float:
-            return 0.08
+    def obtain_bonus(self):
+        return self.get_salary() * 0.15
+    
+    def can_see_reports(self) ->bool:
+        return True
+    
+    def can_see_information(self) -> bool:
+        return True
+    
+    def can_create_user(self) -> bool:
+        return True
+    
+    def can_delete_user(self) ->bool:
+        return True
+    
+    def percentage_increase(self) -> float:
+        return 0.08
 ´´´
 
 ### Analista
 <p>Ve reportes y tiene un bono diferente al resto de empleados. </p>
 
 ´´´python
-    from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
-    class Analista(EmpleadoAutenticable):
-        def __init__(self, name: str, dni: int, experience: int, password: str):
-            super().__init__(name, dni, "Analista", 30000, experience, password)
-        
-        def obtain_bonus(self):
-            return self.get_salary() * 0.2
-        
-        def can_see_reports(self) -> bool:
-            return True
-        
-        def percentage_increase(self) -> float:
-            return 0.08
+from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
+class Analista(EmpleadoAutenticable):
+    def __init__(self, name: str, dni: int, experience: int, password: str):
+        super().__init__(name, dni, "Analista", 30000, experience, password)
+    
+    def obtain_bonus(self):
+        return self.get_salary() * 0.2
+    
+    def can_see_reports(self) -> bool:
+        return True
+    
+    def percentage_increase(self) -> float:
+        return 0.08
 ´´´
 
 ### Director
 <p> Similar a Administrativo. No obstante, puede aprobar transferencias y créditos, subir y modificar salarios de otros empleados y obtener bonos más altos que otros empleados.</p>
 
 ´´´python
-    from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
-    from Modelos.Roles.Empleado import Empleado
-    class Director(EmpleadoAutenticable):
-        def __init__(self, name: str, dni: int, department: str, experience: int, password: str):
-            super().__init__(name, dni, "Director", 50000, experience, password)
-            self.department = department
+from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
+from Modelos.Roles.Empleado import Empleado
+class Director(EmpleadoAutenticable):
+    def __init__(self, name: str, dni: int, department: str, experience: int, password: str):
+        super().__init__(name, dni, "Director", 50000, experience, password)
+        self.department = department
 
-        def obtain_bonus(self):
-            return self.get_salary() * 0.5
+    def obtain_bonus(self):
+        return self.get_salary() * 0.5
 
-        def can_approve_credit(self, amount: float)-> bool:
-            return amount <= 100000
-        
-        def can_modify_salary(self, employee: "Empleado", amount: float)-> bool:
-            return amount <= 0.2 * employee.get_salary()
-        
-        def can_see_reports(self) ->bool:
-            return True
-        
-        def can_see_information(self) -> bool:
-            return True
-        
-        def can_approve_transfer(self, amount: float) -> bool:
-            return amount <= 50000
-        
-        def can_create_user(self) -> bool:
-            return True
-        
-        def can_delete_user(self) ->bool:
-            return True
-        
-        def can_raise_salary(self, employee: "Empleado") -> bool:
-            return True
-        
-        def percentage_increase(self) -> float:
-            return 0.06
+    def can_approve_credit(self, amount: float)-> bool:
+        return amount <= 100000
+    
+    def can_modify_salary(self, employee: "Empleado", amount: float)-> bool:
+        return amount <= 0.2 * employee.get_salary()
+    
+    def can_see_reports(self) ->bool:
+        return True
+    
+    def can_see_information(self) -> bool:
+        return True
+    
+    def can_approve_transfer(self, amount: float) -> bool:
+        return amount <= 50000
+    
+    def can_create_user(self) -> bool:
+        return True
+    
+    def can_delete_user(self) ->bool:
+        return True
+    
+    def can_raise_salary(self, employee: "Empleado") -> bool:
+        return True
+    
+    def percentage_increase(self) -> float:
+        return 0.06
 ´´´
 
 ### Logistica
 <p>Sólo difiere su porcentaje de incremento de salario y bonus.</p>
 
 ´´´python
-    from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
-    class Logistica(EmpleadoAutenticable):
-        def __init__(self, name: str, dni: int, experience: int, password: str):
-            super().__init__(name, dni, "Logística", 15000, experience, password)
+from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
+class Logistica(EmpleadoAutenticable):
+    def __init__(self, name: str, dni: int, experience: int, password: str):
+        super().__init__(name, dni, "Logística", 15000, experience, password)
 
-        def obtain_bonus(self):
-            return self.get_salary()* 0.3
-        
-        def percentage_increase(self) -> float:
-            return 0.02
+    def obtain_bonus(self):
+        return self.get_salary()* 0.3
+    
+    def percentage_increase(self) -> float:
+        return 0.02
 ´´´
 
 ### Socio Comercial
 <p>Usuario con contraseña. Tendrá privilegios en transferencias, créditos e inversiones. </p>
 
 ´´´python
-    from Modelos.AutenticableHelper.AutenticableHelper import AutenticableHelper
-    class SocioComercial:
-        def __init__(self) -> None:
-            self._helper = AutenticableHelper()
-            self.clave: str | None = None
+from Modelos.AutenticableHelper.AutenticableHelper import AutenticableHelper
+class SocioComercial:
+    def __init__(self) -> None:
+        self._helper = AutenticableHelper()
+        self.clave: str | None = None
 
-        def autenticar_usuario(self, clave: str) -> bool:
-            return self._helper.comparate_passwords(self.clave, clave)
+    def autenticar_usuario(self, clave: str) -> bool:
+        return self._helper.comparate_passwords(self.clave, clave)
 ´´´
 
 ## Servicios
@@ -611,16 +611,16 @@ class SaldoInsuficienteException(Exception):
 <p>Módulo dedicado al bonus del salario del empleado</p>
 
 ´´´python
-    from Modelos.Roles.Empleado import Empleado
-    class BonusAdmin:
-        def __init__(self) -> None:
-            self.__total_bonus: float = 0.0
+from Modelos.Roles.Empleado import Empleado
+class BonusAdmin:
+    def __init__(self) -> None:
+        self.__total_bonus: float = 0.0
 
-        def register(self, employee: Empleado):
-            self.__total_bonus += employee.obtain_bonus()
+    def register(self, employee: Empleado):
+        self.__total_bonus += employee.obtain_bonus()
 
-        def get_total_bonus(self):
-            return self.__total_bonus
+    def get_total_bonus(self):
+        return self.__total_bonus
 ´´´
 
 ### Banco
