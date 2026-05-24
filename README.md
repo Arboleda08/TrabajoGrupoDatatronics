@@ -375,7 +375,6 @@ class SaldoInsuficienteException(Exception):
 <p>Este paquete contiene a la clase Log, la cual simplifica el registro de veces accedidas por el usuario al sistema.</p>
 
 ´´´python
-
     import uuid
     from Modelos.Roles.Empleado import Empleado
     from datetime import datetime
@@ -399,7 +398,6 @@ class SaldoInsuficienteException(Exception):
 <p>Éste es la clase base que contiene atributos propios de una persona contratada por una entidad, al igual que funcionalidades como solicitar aumento de salario, bonus, despedir o contratar empleados, etc. Algunos de los métodos son sobreescritos en clases posteriores, ya que según el rango al que se pertenezca, se limitan las capacidades.</p>
 
 ´´´python
-
     class Empleado:
         total_employees: int = 0
         
@@ -471,7 +469,6 @@ class SaldoInsuficienteException(Exception):
 <p> Hereda de empleado. Su diferencia radica en que EmpleadoAutenticable cuenta con contraseña y sistema de verificación de la misma.</p>
 
 ´´´python
-
     from Modelos.Roles.Empleado import Empleado
     from Modelos.AutenticableHelper.AutenticableHelper import AutenticableHelper
 
@@ -492,7 +489,6 @@ class SaldoInsuficienteException(Exception):
 <p>Cualquier empleado que sea ejecutivo o jefe gozará de estas funcionalidades. Puede ver reportes, ver información, crear y eliminar usuarios. Como novedad, tiene un aumento de salario distinto al de un empleado base.</p>
 
 ´´´python
-
     from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
     class Administrativo(EmpleadoAutenticable):
         def __init__(self, name: str, dni: int, experience: int, password: str):
@@ -521,7 +517,6 @@ class SaldoInsuficienteException(Exception):
 <p>Ve reportes y tiene un bono diferente al resto de empleados. </p>
 
 ´´´python
-
     from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
     class Analista(EmpleadoAutenticable):
         def __init__(self, name: str, dni: int, experience: int, password: str):
@@ -541,7 +536,6 @@ class SaldoInsuficienteException(Exception):
 <p> Similar a Administrativo. No obstante, puede aprobar transferencias y créditos, subir y modificar salarios de otros empleados y obtener bonos más altos que otros empleados.</p>
 
 ´´´python
-
     from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
     from Modelos.Roles.Empleado import Empleado
     class Director(EmpleadoAutenticable):
@@ -584,7 +578,6 @@ class SaldoInsuficienteException(Exception):
 <p>Sólo difiere su porcentaje de incremento de salario y bonus.</p>
 
 ´´´python
-
     from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
     class Logistica(EmpleadoAutenticable):
         def __init__(self, name: str, dni: int, experience: int, password: str):
@@ -599,8 +592,8 @@ class SaldoInsuficienteException(Exception):
 
 ### Socio Comercial
 <p>Usuario con contraseña. Tendrá privilegios en transferencias, créditos e inversiones. </p>
-´´´python
 
+´´´python
     from Modelos.AutenticableHelper.AutenticableHelper import AutenticableHelper
     class SocioComercial:
         def __init__(self) -> None:
@@ -618,7 +611,6 @@ class SaldoInsuficienteException(Exception):
 <p>Módulo dedicado al bonus del salario del empleado</p>
 
 ´´´python
-
     from Modelos.Roles.Empleado import Empleado
     class BonusAdmin:
         def __init__(self) -> None:
@@ -630,12 +622,14 @@ class SaldoInsuficienteException(Exception):
         def get_total_bonus(self):
             return self.__total_bonus
 ´´´
+
 ### Banco
 <p>Es la entidad central del sistema (por no decir que constituye casi la totalidad del sistema). Autentica usuarios, los bloquea, valida permisos para crear y eliminar usuarios, ver reportes e información. De igual forma, almecena los registros de los clientes, las transacciones, cuentas bancarias, entre otras.
 Cuenta con acciones básicas como búsqueda de clientes por dni y número de banco.</p>
 <p>Para gestionar los empleados, se pueden despedir (dependiendo si el cargo lo permite), cambiar su rol (lo que simula un ascenso), se aprueban incrementos de salario, se modifica experiencia y se detectan operaciones sospechosas.</p>
 <p>Como extra, se utilizó una función especial con la librería json para exportar las cuentas en este formato.</p>
 <p>Próximamente, se actualizarán funcionalidades relativas a créditos e inversiones, más será necesario realizar otras clases para que Banco no se convierta en una superclase.</p>
+
 ´´´python
   import json
   from Modelos.Cuentas.Cliente import Cliente
