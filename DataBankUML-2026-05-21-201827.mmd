@@ -3,8 +3,8 @@ config:
   theme: dark
 ---
 classDiagram
-    DataBank <|-- Modelos
-    DataBank <|-- Servicios
+    DataBank *-- Modelos
+    DataBank *-- Servicios
 
     class Modelos{}
     class Servicios{}
@@ -361,3 +361,8 @@ classDiagram
     + obtain_bonus()
     + percentage_increase()
    }
+Banco *-- CuentaBancaria
+Banco *--Empleado
+Banco *-- Cliente
+CuentaBancaria *-- Transaction
+Cliente *-- Credito
