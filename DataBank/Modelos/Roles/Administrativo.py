@@ -1,24 +1,24 @@
-from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
-class Administrativo(EmpleadoAutenticable):
+from Modelos.Roles.AutentificarEmpleado import AutentificarEmpleado
+class Administrativo(AutentficarEmpleado):
     def __init__(self, name: str, dni: int, experience: int, password: str):
-        super().__init__(name, dni, "Administrativo", 20000, experience, password)
+        super().__init__(nombre, dni, "Administrativo", 20000, experiencia, contraseña)
 
-    def obtain_bonus(self):
+    def obtener_bonus(self):
         return self.get_salary() * 0.15
     
-    def can_see_reports(self) ->bool:
+    def puede_ver_reportes(self) ->bool:
         return True
     
-    def can_see_information(self) -> bool:
+    def puede_ver_informacion(self) -> bool:
         return True
     
-    def can_create_user(self) -> bool:
+    def puede_crear_usuarios(self) -> bool:
         return True
     
-    def can_delete_user(self) ->bool:
+    def puede_eliminar_usuarios(self) ->bool:
         return True
     
-    def percentage_increase(self) -> float:
+    def porcentaje_de_aumento(self) -> float:
         return 0.08
     
 
