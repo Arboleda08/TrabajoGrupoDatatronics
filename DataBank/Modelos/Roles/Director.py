@@ -1,37 +1,37 @@
-from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
+from Modelos.Roles.AutentificarEmpleado import AutentificarEmpleado
 from Modelos.Roles.Empleado import Empleado
-class Director(EmpleadoAutenticable):
-    def __init__(self, name: str, dni: int, department: str, experience: int, password: str):
-        super().__init__(name, dni, "Director", 50000, experience, password)
-        self.department = department
+class Director(AutentificarEmpleado):
+    def __init__(self, nombre: str, dni: int, departamento: str, experiencia: int, contraseña: str):
+        super().__init__(nombre, dni, "Director", 50000, experiencia, contraseña)
+        self.departamento = departamento
 
-    def obtain_bonus(self):
-        return self.get_salary() * 0.5
+    def obtener_bonus(self):
+        return self.conseguir_salario() * 0.5
 
-    def can_approve_credit(self, amount: float)-> bool:
-        return amount <= 100000
+    def puede_aprobar_creditos(self, monto: float)-> bool:
+        return monto <= 100000
     
-    def can_modify_salary(self, employee: "Empleado", amount: float)-> bool:
-        return amount <= 0.2 * employee.get_salary()
+    def puede_modificar_salarios(self, emploado: "Empleado", monto: float)-> bool:
+        return amount <= 0.2 * empleado.conseguir_salario()
     
-    def can_see_reports(self) ->bool:
+    def puede_ver_reportes(self) ->bool:
         return True
     
-    def can_see_information(self) -> bool:
+    def puede_ver_informacion(self) -> bool:
         return True
     
-    def can_approve_transfer(self, amount: float) -> bool:
-        return amount <= 50000
+    def puede_aprobar_transferencia(self, monto: float) -> bool:
+        return monto <= 50000
     
-    def can_create_user(self) -> bool:
+    def puede_crear_usuario(self) -> bool:
         return True
     
-    def can_delete_user(self) ->bool:
+    def puede_eliminar_usuario(self) ->bool:
         return True
     
-    def can_raise_salary(self, employee: "Empleado") -> bool:
+    def puede_aumentar_salario(self, empleado: "Empleado") -> bool:
         return True
     
-    def percentage_increase(self) -> float:
+    def porcentaje_de_aumento(self) -> float:
         return 0.06
     
