@@ -1,13 +1,13 @@
-from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
-class Analista(EmpleadoAutenticable):
-    def __init__(self, name: str, dni: int, experience: int, password: str):
-        super().__init__(name, dni, "Analista", 30000, experience, password)
+from Modelos.Roles.AutentificarEmpleado import AutentificarEmpleado
+class Analista(AutentificarEmpleado):
+    def __init__(self, nombre: str, dni: int, experiencia: int, contraseña: str):
+        super().__init__(nombre, dni, "Analista", 30000, experiencia, contraseña)
     
-    def obtain_bonus(self):
-        return self.get_salary() * 0.2
+    def obtener_bonus(self):
+        return self.conseguir_salario() * 0.2
     
-    def can_see_reports(self) -> bool:
+    def puede_ver_reportes(self) -> bool:
         return True
     
-    def percentage_increase(self) -> float:
+    def porcentaje_de_incremento(self) -> float:
         return 0.08
