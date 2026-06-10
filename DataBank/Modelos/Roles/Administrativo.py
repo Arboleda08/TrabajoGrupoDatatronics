@@ -4,7 +4,7 @@ class Administrativo(AutentficarEmpleado):
         super().__init__(nombre, dni, "Administrativo", 20000, experiencia, contraseña)
 
     def obtener_bonus(self):
-        return self.get_salary() * 0.15
+        return self.conseguir_salario() * 0.15
     
     def puede_ver_reportes(self) ->bool:
         return True
