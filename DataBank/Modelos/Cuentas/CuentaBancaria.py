@@ -1,8 +1,8 @@
 from .Cliente import Cliente
-from Modelos.Cuentas.Transaction import Transaction
+from DataBank.Modelos.Cuentas.transaccion import Transaction
 from Modelos.Excepciones.SaldoInsuficienteException import SaldoInsuficienteException
 from Modelos.Excepciones.OperacionImposibleException import OperacionImposibleException
-from Modelos.Cuentas.card import Card
+from DataBank.Modelos.Cuentas.tarjeta import Card
 import uuid
 from datetime import datetime
 from datetime import timedelta

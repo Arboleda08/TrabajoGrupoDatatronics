@@ -1,6 +1,6 @@
 from Servicios.Banco import Banco
 from Modelos.Cuentas.CuentaBancaria import CuentaBancaria
-from Modelos.Cuentas.card import Card
+from DataBank.Modelos.Cuentas.tarjeta import Card
 
 class AdministrarTarjetas:
     def __init__(self, banco: "Banco"):

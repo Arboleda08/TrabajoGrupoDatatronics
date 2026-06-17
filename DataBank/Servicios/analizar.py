@@ -5,7 +5,7 @@ from Modelos.Cuentas.CuentaAhorros import CuentaAhorros
 from Modelos.Cuentas.CuentaCorriente import CuentaCorriente
 from Modelos.Cuentas.CuentaEmpresarial import CuentaEmpresarial
 from Modelos.Cuentas.CuentaJuvenil import CuentaJuvenil
-from Modelos.Cuentas.Transaction import Transaccion
+from DataBank.Modelos.Cuentas.transaccion import Transaccion
 from Modelos.Excepciones.OperacionImposibleException import OperacionImposibleException
 from Modelos.Roles.Empleado import Empleado
 

@@ -2,7 +2,7 @@ from Servicios.Banco import Banco
 from Modelos.Roles.EmpleadoAutenticable import EmpleadoAutenticable
 from Modelos.Roles.Empleado import Empleado
 
-class AutenticarObjetos:
+class AutentificarObjetos:
     def __init__(self, banco: "Banco"):
         self.banco = banco
     

@@ -2,21 +2,21 @@ import json
 from datetime import datetime, timedelta
 from Modelos.Cuentas.CuentaBancaria import CuentaBancaria
 from Modelos.Cuentas.Cliente import Cliente
-from Modelos.Cuentas.Transaction import Transaction
+from DataBank.Modelos.Cuentas.transaccion import Transaction
 from Modelos.Roles.Empleado import Empleado
 from Modelos.Excepciones.OperacionImposibleException import OperacionImposibleException
 from Modelos.Log.Log import Log
 from Servicios.BonusAdmin import BonusAdmin
-from Servicios.analize import Analize
-from Servicios.autenticate import AutenticateObjects
-from Servicios.list_objects import ListObjects
-from Servicios.manage_accounts import ManageAccounts
-from Servicios.manage_credits import ManageCredits
-from Servicios.manage_employees import ManageEmployees
+from DataBank.Servicios.analizar import Analize
+from DataBank.Servicios.autentificar_objetos import AutenticateObjects
+from DataBank.Servicios.enumerar_objetos import ListObjects
+from DataBank.Servicios.administrar_cuentas import ManageAccounts
+from DataBank.Servicios.administrar_creditos import ManageCredits
+from DataBank.Servicios.administrar_empleados import ManageEmployees
 from DataBank.Servicios.administrar_tarjetas import ManageCards
-from Servicios.notificate import Notificate
-from Servicios.report import ReportObjects
-from Servicios.search import SearchObjects
+from DataBank.Servicios.notificar import Notificate
+from DataBank.Servicios.reporte import ReportObjects
+from DataBank.Servicios.buscar_objetos import SearchObjects
 
 class Banco:
     def __init__(self, nombre: str, numero: int, clientes: list[Cliente], empleados: list[Empleado], global_transactiones: list[Transaction], registros: list[Log], bonus_admin: BonusAdmin):
