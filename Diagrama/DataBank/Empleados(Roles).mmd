@@ -1,0 +1,324 @@
+classDiagram
+    Empleado <|-- Director
+    Empleado <|-- Analista
+    Empleado <|-- Administrativo
+    Empleado <|-- Logistica
+    Empleado <|-- SocioComercial
+
+    class Empleado{}
+    class Director{}
+    class Analista{}
+    class Administrativo{}
+    class Logistica{}
+    class SocioComercial{}
+class Administrativo{
+    + name: str
+    + dni: int
+    + experience: int
+    + password: str
+    + obtain_bonus()
+    + can_see_reports()
+    + can_see_information()
+    + can_create_user()
+    + can_delete_user()
+    + percentage_increase()
+   }
+   class Analista{
+    + name: str
+    + dni: int
+    + experience: int
+    + password: str
+    + obtain_bonus()
+    + can_see_reports()
+    + percentage_increase()
+   }
+   class Director{
+    + name: str
+    + dni: int
+    + department: str
+    + experience: int
+    + password: str
+    + obtain_bonus()
+    + can_approve_credit(amount)
+    + can_modify_salary(employee, amount)
+    + can_see_reports()
+    + can_see_information() 
+    + can_approve_transfer(amount)
+    + can_create_user()
+    + can_delete_user()
+    + can_raise_salary(employee)
+    + percentage_increase()
+   }
+
+   class Logistica{
+    + name: str
+    + dni: int
+    + experience: int
+    + password: str
+    + obtain_bonus()
+    + percentage_increase()
+   }
+
+
+
+
+
+    
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
