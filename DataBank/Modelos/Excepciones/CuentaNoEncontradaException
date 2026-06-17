@@ -1,0 +1,2 @@
+class CuentaNoEncontradaException(Exception):
+    pass
