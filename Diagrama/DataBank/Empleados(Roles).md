@@ -4,3 +4,5 @@ classDiagram
     Empleado <|-- Administrativo
     Empleado <|-- Logistica
     Empleado <|-- SocioComercial
+
+    class Empleado {}
